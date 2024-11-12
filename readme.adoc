@@ -132,4 +132,50 @@ node {
 }
 ----
 
-                                                               
+## Functions                                                               
+
+In declarative pipelines, you can define functions within the script block, which gives you access to standard Groovy syntax for functions.
+
+[source,groovy,linenums]
+----    
+pipeline {
+    agent any
+    stages {
+        stage('Example') {
+            steps {
+                script {
+                    // Define the function
+                    def sayHello(name) {
+                        echo "Hello, ${name}!"
+                    }
+                    
+                    // Call the function
+                    sayHello('Alice')
+                    sayHello('Bob')
+                }
+            }
+        }
+    }
+}
+----
+
+Scripted pipelines allow you to define functions more flexibly, as the entire pipeline is Groovy-based. You can define functions outside of stages, making them reusable across multiple stages.
+
+[source,groovy,linenums]
+----    
+// Define the function at the top level
+def sayHello(name) {
+    echo "Hello, ${name}!"
+}
+
+node {
+    stage('Example 1') {
+        // Call the function
+        sayHello('Alice')
+    }
+    stage('Example 2') {
+        // Call the function again
+        sayHello('Bob')
+    }
+}
+----
