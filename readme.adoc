@@ -1,0 +1,135 @@
+## Flow
+
+Declarative Pipeline (Declarative Approach):
+
+*    Focuses on defining the outcome and overall structure of the pipeline.
+*    Follows a strict syntax, with defined blocks like pipeline, agent, stages, steps, etc.
+*    The Jenkins engine handles many setup details behind the scenes, like setting up nodes and managing failures.
+
+[source,groovy,linenums]
+----
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+            }
+        }
+    }
+}
+
+----
+Scripted Pipeline (Imperative Approach):
+
+*    Provides step-by-step instructions, requiring the user to manage how things happen.
+*    Uses standard Groovy, giving flexibility in control flow (e.g., for loops, if statements).
+*    You must explicitly handle node allocation and error handling.
+
+[source,groovy,linenums]
+----
+node {
+    stage('Build') {
+        echo 'Building...'
+    }
+    stage('Test') {
+        echo 'Testing...'
+    }
+    stage('Deploy') {
+        echo 'Deploying...'
+    }
+}
+
+
+----   
+
+## Error Handling
+
+Declarative: Has built-in error handling with post conditions for steps like success, failure, always, and unstable    
+
+[source,groovy,linenums]
+----
+                                                               
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
+}
+----
+
+Scripted: Requires manual error handling using try-catch blocks or finally to manage success/failure scenarios.
+
+[source,groovy,linenums]
+----                                                               
+node {
+    try {
+        stage('Build') {
+            echo 'Building...'
+            // Error-prone code
+        }
+    } catch (Exception e) {
+        echo 'Build failed!'
+    } finally {
+        echo 'Cleanup steps here'
+    }
+}
+----
+                                                               
+## Loops and Conditionals
+
+Declarative: Limited in looping and conditionals; instead, it uses when for simple conditions to control execution, emphasizing what condition applies rather than how to implement it.
+
+[source,groovy,linenums]
+----                                                               
+pipeline {
+    agent any
+    stages {
+        stage('Test') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo 'Running tests on main branch'
+            }
+        }
+    }
+}
+----                                                               
+                                             
+Scripted: Provides full Groovy control, including for loops and complex conditionals, which can lead to more procedural, step-by-step logic.
+
+[source,groovy,linenums]
+----                                                               
+node {
+    stage('Test') {
+        if (env.BRANCH_NAME == 'main') {
+            echo 'Running tests on main branch'
+        }
+    }
+}
+----
+
+                                                               
